@@ -6,6 +6,7 @@ import { useState } from "react";
 function App() {
   const [userInput, setUserInput] = useState("")
   const [progOutput, setProgOutput] = useState("Run your code!")
+  const [hasError, setHasError] = useState(false)
   const context = createContext(Variant.DEFAULT, undefined, undefined)
   const options = {
     scheduler: 'preemptive',
@@ -15,22 +16,36 @@ function App() {
   }
 
   function handleRun() {
-    runInContext(userInput, context, options).then(data => {
-      setProgOutput(data.value.value)
+    setHasError(false)
+    runInContext(userInput, context, options).catch(
+      error => {
+        setProgOutput(error.explain())
+        setHasError(true)
+      }
+    ).then(data => {
+      if (data) {
+        setProgOutput(data.value.value)
+      }
     })
   }
 
   return (
     <div className="App">
-      <div className="input">
-        sml:
-        <input type="text" value={userInput} onChange={e => setUserInput(e.target.value)} />
-        <button onClick={handleRun}>
-          Run
-        </button>
-      </div>
-      <div className='output'>
-        {progOutput}
+      <div className='nav'> SML Slang </div>
+      <div className='container'>
+        <div className="input">
+          Type your Standard ML input here!
+          <input type="text" value={userInput} onChange={e => setUserInput(e.target.value)} className='input-box'/>
+          <button onClick={handleRun} className='button'>
+            Run
+          </button>
+        </div>
+        <div className='output'>
+          {hasError 
+          ? <img src="./sad-kermit.png" alt="sad kermit" />
+          : <img src="./happy-kermit.png" alt="sad kermit" />}
+          <div className='output-box'>{progOutput}</div>
+        </div>
       </div>
     </div>
   );
