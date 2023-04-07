@@ -1,23 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import { runInContext, createContext } from 'sml-slang'
+import { Variant } from 'sml-slang/dist/types'
+import { useState } from "react";
 
 function App() {
+  const [userInput, setUserInput] = useState("")
+  const [progOutput, setProgOutput] = useState("Run your code!")
+  const context = createContext(Variant.DEFAULT, undefined, undefined)
+  const options = {
+    scheduler: 'preemptive',
+    executionMethod: 'interpreter',
+    variant: Variant.DEFAULT,
+    useSubst: false
+  }
+
+  function handleRun() {
+    runInContext(userInput, context, options).then(data => {
+      setProgOutput(data.value.value)
+    })
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="input">
+        sml:
+        <input type="text" value={userInput} onChange={e => setUserInput(e.target.value)} />
+        <button onClick={handleRun}>
+          Run
+        </button>
+      </div>
+      <div className='output'>
+        {progOutput}
+      </div>
     </div>
   );
 }
