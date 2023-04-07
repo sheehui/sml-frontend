@@ -25,7 +25,8 @@ function App() {
       })
       .then((data) => {
         if (data) {
-          const value = data.value.value ? data.value.value : "fn";
+          const value =
+            data.value.value !== undefined ? data.value.value : "fn";
           setProgOutput(`
           ${value} : ${smlTypeToString(data.value.type)}`);
         }
@@ -34,7 +35,7 @@ function App() {
 
   return (
     <div className="App">
-      <div className="nav"> SML Slang </div>
+      <h1>SML Slang</h1>
       <div className="container">
         <div className="input">
           <p>Type your Standard ML input here!</p>
