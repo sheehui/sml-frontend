@@ -1,6 +1,7 @@
 import "./App.css";
 import { runInContext, createContext } from "sml-slang";
 import { Variant } from "sml-slang/dist/types";
+import { smlTypeToString } from "sml-slang/dist/errors/compileTimeSourceError";
 import { useState } from "react";
 
 function App() {
@@ -24,7 +25,9 @@ function App() {
       })
       .then((data) => {
         if (data) {
-          setProgOutput(data.value.value);
+          const value = data.value.value ? data.value.value : "fn";
+          setProgOutput(`
+          ${value} : ${smlTypeToString(data.value.type)}`);
         }
       });
   }
@@ -34,11 +37,11 @@ function App() {
       <div className="nav"> SML Slang </div>
       <div className="container">
         <div className="input">
-          Type your Standard ML input here!
+          <p>Type your Standard ML input here!</p>
           <textarea
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
-            rows={40}
+            rows={30}
             cols={80}
             autoFocus
             className="input-box"
@@ -48,7 +51,7 @@ function App() {
           </button>
         </div>
         <div className="output">
-          <div>
+          <div className="kermy">
             {hasError ? (
               <img src="./sad-kermit.png" alt="sad kermit" />
             ) : (
