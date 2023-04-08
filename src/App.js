@@ -1,8 +1,10 @@
 import "./App.css";
 import { runInContext, createContext } from "sml-slang";
 import { Variant } from "sml-slang/dist/types";
-import { smlTypeToString } from "sml-slang/dist/errors/compileTimeSourceError";
-import { useState } from "react";
+import { smlTypeToString, smlTypedValToString } from "sml-slang/dist/utils/formatters";
+import { useState, useEffect } from "react";
+import { CompileTimeSourceError } from 'sml-slang/dist/errors/compileTimeSourceError'
+import { RuntimeSourceError } from 'sml-slang/dist/errors/runtimeSourceError'
 
 function App() {
   const [userInput, setUserInput] = useState("");
@@ -16,26 +18,33 @@ function App() {
     useSubst: false,
   };
 
+  useEffect(() => {
+   setUserInput("")
+   setProgOutput("Run your code!")
+   setHasError(false)
+  }, []);
+
   function handleRun() {
     setHasError(false);
     runInContext(userInput, context, options)
-      .catch((error) => {
-        setProgOutput(error.explain());
-        setHasError(true);
-      })
       .then((data) => {
         if (data) {
-          const value =
-            data.value.value !== undefined ? data.value.value : "fn";
           setProgOutput(`
-          ${value} : ${smlTypeToString(data.value.type)}`);
+          ${smlTypedValToString(data.value)} : ${smlTypeToString(data.value.type)}`);
         }
+      }, (error) => {
+        if (error instanceof RuntimeSourceError || error instanceof CompileTimeSourceError) {
+          setProgOutput(error.explain());
+        } else {
+          setProgOutput(error.message);
+        }
+        setHasError(true);
       });
   }
 
   return (
     <div className="App">
-      <h1>SML Slang</h1>
+      <h1 className="nav">SML Slang</h1>
       <div className="container">
         <div className="input">
           <p>Type your Standard ML input here!</p>
@@ -56,7 +65,7 @@ function App() {
             {hasError ? (
               <img src="./sad-kermit.png" alt="sad kermit" />
             ) : (
-              <img src="./happy-kermit.png" alt="sad kermit" />
+              <img src="./happy-kermit.png" alt="happy kermit" />
             )}
           </div>
           <div className="output-list">
