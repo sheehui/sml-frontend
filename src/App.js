@@ -29,8 +29,21 @@ function App() {
     runInContext(userInput, context, options)
       .then((data) => {
         if (data.value) {
-          setProgOutput(`
-          ${smlTypedValToString(data.value)} : ${smlTypeToString(data.value.type)}`);
+          let res = ''
+          if (Array.isArray(data.value)) {
+            if (data.value.length === 0) {
+              res = '(no output)'
+            }
+            for (let i = 0; i < data.value.length; i++) {
+              if (i !== 0) {
+                res += "\n"
+              }
+              res += `${smlTypedValToString(data.value[i])} : ${smlTypeToString(data.value[i].type)}`
+            }
+          } else {
+            res = `${smlTypedValToString(data.value)} : ${smlTypeToString(data.value.type)}`
+          }
+          setProgOutput(res);
         }
       }, (error) => {
         if (error instanceof RuntimeSourceError || error instanceof CompileTimeSourceError) {
@@ -71,7 +84,7 @@ function App() {
           <div className="output-list" style={{
             color : hasError ? '#C41E3A' : 'black'
           }}>
-            <div className="output-box">{progOutput}</div>
+            <div className="output-box">{progOutput.split('\n').map(x => <p>{x}</p>)}</div>
           </div>
         </div>
       </div>

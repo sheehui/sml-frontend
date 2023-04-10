@@ -51,6 +51,10 @@
   font-weight: 500;
 }
 
+.output-list p {
+  margin: 3px 0;
+}
+
 .output-box {
   width: 100%;
   padding: 10px 0;
