@@ -28,7 +28,7 @@ function App() {
     setHasError(false);
     runInContext(userInput, context, options)
       .then((data) => {
-        if (data) {
+        if (data.value) {
           setProgOutput(`
           ${smlTypedValToString(data.value)} : ${smlTypeToString(data.value.type)}`);
         }
@@ -47,7 +47,7 @@ function App() {
       <h1 className="nav">SML Slang</h1>
       <div className="container">
         <div className="input">
-          <p>Type your Standard ML input here!</p>
+          <h3>Type your Standard ML input here!</h3>
           <textarea
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
@@ -68,7 +68,9 @@ function App() {
               <img src="./happy-kermit.png" alt="happy kermit" />
             )}
           </div>
-          <div className="output-list">
+          <div className="output-list" style={{
+            color : hasError ? '#C41E3A' : 'black'
+          }}>
             <div className="output-box">{progOutput}</div>
           </div>
         </div>
